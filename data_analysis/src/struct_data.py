@@ -1,5 +1,7 @@
 import matplotlib.pyplot as plt
+import seaborn as sns
 import pandas as pd
+import os
 
 from ucimlrepo import fetch_ucirepo
 
@@ -31,6 +33,8 @@ class DataBase:
         plt.title("Density Distribution - Cell Nucleus Area")
         plt.xlabel("Area (area1)")
         plt.ylabel("Density")
+       
+        plt.savefig('data_analysis/images/density_distribution.png')
         plt.show()
 
     def robust_anomaly_isolation(self, data):
@@ -45,12 +49,30 @@ class DataBase:
         outliers = data[data['area1'] > superior_limit]
         prevalence = outliers['Diagnosis'].mean() * 100
 
+        sns.boxplot(x=data['area1'])
+        plt.title("Comparison of Anomaly")
+
+        plt.savefig('data_analysis/images/boxplot_outliers.png')
+        plt.show()
+
         print(f"Prevalence: {prevalence}")
 
+    def mapping(self, data):
+        corr_matrix = data.drop(columns=['Diagnosis']).corr()
+        sns.heatmap(corr_matrix, cmap='coolwarm')
+        plt.title("Multicollinearity Mapping")
+
+        plt.savefig('data_analysis/images/multicollinearity_map.png')
+        plt.show()
+
+
 if __name__ == "__main__":
+
+    os.makedirs('data_analysis/images', exist_ok=True)
 
     play = DataBase()
     data = play.struct_database()
 
     play.biological_asymmetry(data)
     play.robust_anomaly_isolation(data)
+    play.mapping(data)
