@@ -33,6 +33,19 @@ class DataBase:
         plt.ylabel("Density")
         plt.show()
 
+    def robust_anomaly_isolation(self, data):
+        first_quartil = data['area1'].quantile(0.25)
+        third_quartil = data['area1'].quantile(0.75)
+        iqr = third_quartil - first_quartil
+
+        superior_limit = third_quartil + 1.5 * iqr
+
+        print(f"Superior Limit: {superior_limit}")
+
+        outliers = data[data['area1'] > superior_limit]
+        prevalence = outliers['Diagnosis'].mean() * 100
+
+        print(f"Prevalence: {prevalence}")
 
 if __name__ == "__main__":
 
@@ -40,3 +53,4 @@ if __name__ == "__main__":
     data = play.struct_database()
 
     play.biological_asymmetry(data)
+    play.robust_anomaly_isolation(data)
