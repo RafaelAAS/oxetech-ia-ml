@@ -49,9 +49,22 @@ class DataBase:
         outliers = data[data['area1'] > superior_limit]
         prevalence = outliers['Diagnosis'].mean() * 100
 
+        mean = data['area1'].mean()
+        std = data['area1'].std()
+        
+        plt.figure(figsize=(12, 5))
         sns.boxplot(x=data['area1'])
+        sns.stripplot(x=data['area1'], color='red', alpha=0.5, jitter=True)
+
+        plt.axvline(superior_limit, color='black', linestyle='--', linewidth=2,
+                    label=f'Limite Superior IQR {superior_limit:.1f}')
+
+        limit_zscore = mean + (3 * std)
+        plt.axvline(limit_zscore, color='blue', linestyle='--', linewidth=2,
+                    label=f'Limite Z-Score > 3 ({limit_zscore:.1f})')
         plt.title("Comparison of Anomaly")
 
+        plt.legend()
         plt.savefig('data_analysis/images/boxplot_outliers.png')
         plt.show()
 
@@ -59,7 +72,8 @@ class DataBase:
 
     def mapping(self, data):
         corr_matrix = data.drop(columns=['Diagnosis']).corr()
-        sns.heatmap(corr_matrix, cmap='coolwarm')
+        plt.figure(figsize=(18, 14))
+        sns.heatmap(corr_matrix, cmap='RdBu_r', annot=True, fmt=".2f", vmin=-1, vmax=1, square=True, annot_kws={"size": 7})
         plt.title("Multicollinearity Mapping")
 
         plt.savefig('data_analysis/images/multicollinearity_map.png')
